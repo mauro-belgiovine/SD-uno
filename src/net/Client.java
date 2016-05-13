@@ -10,6 +10,26 @@ import game.*;
 
 public class Client {
 
+    public static void tryBind(Player p, String host){
+
+        RemoteGame r_game;
+        Registry registry;
+
+        String name = "net.RemoteGame";
+
+        try {
+
+            registry = LocateRegistry.getRegistry(host, 50000);
+            r_game = (RemoteGame) registry.lookup(name);
+            if(r_game.addPlayer(p)) startGame(p, r_game); else System.out.println("Game is FULL!! Sorry.");
+
+        } catch (Exception e) {
+            System.err.println("Discovery() exception:");
+            e.printStackTrace();
+
+        }
+    }
+
 
     public static void startGame(Player p, RemoteGame r_game) throws RemoteException{
 
@@ -93,11 +113,15 @@ public class Client {
     public static void main(String args[]) {
 
         String p_name = "";
+        String host = "";
 
-        if(args.length > 0) p_name = args[0];
+        if(args.length > 1){
+            p_name = args[0];
+            host = args[1];
+        }
         else {
 
-            System.out.println("Usage: \n\tnet.Client <player_name>");
+            System.out.println("Usage: \n\tnet.Client <player_name> <host name>");
             return;
         }
 
@@ -108,21 +132,15 @@ public class Client {
 
         String name = "net.RemoteGame";
 
-        for(int h = 1; h < 255; h++){
+        /*for(int h = 1; h < 255; h++){
 
-            try {
+            String host = "192.168.1."+h;
+            System.out.println("checking ip "+host);
 
-                String host = "192.168.1."+h;
-                System.out.println("checking ip "+host);
-                registry = LocateRegistry.getRegistry(host, 50000);
-                r_game = (RemoteGame) registry.lookup(name);
-                if(r_game.addPlayer(p)) startGame(p, r_game); else System.out.println("Game is FULL!! Sorry.");
+            tryBind(p, host);
+        }*/
 
-            } catch (Exception e) {
-                System.err.println("r_pop() exception:");
-                e.printStackTrace();
-            }
-        }
+        tryBind(p, host);
 
     }
 
