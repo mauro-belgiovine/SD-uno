@@ -113,6 +113,7 @@ public class Client {
             try {
 
                 String host = "192.168.1."+h;
+                System.out.println("checking ip "+host);
                 registry = LocateRegistry.getRegistry(host, 50000);
                 r_game = (RemoteGame) registry.lookup(name);
                 if(r_game.addPlayer(p)) startGame(p, r_game); else System.out.println("Game is FULL!! Sorry.");
