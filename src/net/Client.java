@@ -103,19 +103,26 @@ public class Client {
 
         Player p = new Player(p_name, 777);
 
-        try {
-            String name = "net.RemoteGame";
-            Registry registry = LocateRegistry.getRegistry(50000);
-            RemoteGame r_game = (RemoteGame) registry.lookup(name);
+        RemoteGame r_game;
+        Registry registry;
 
-            if(r_game.addPlayer(p)) startGame(p, r_game); else System.out.println("Game is FULL!! Sorry.");
+        String name = "net.RemoteGame";
 
+        for(int h = 1; h < 255; h++){
 
+            try {
 
-        } catch (Exception e) {
-            System.err.println("r_pop() exception:");
-            e.printStackTrace();
+                String host = "192.168.1."+h;
+                registry = LocateRegistry.getRegistry(host, 50000);
+                r_game = (RemoteGame) registry.lookup(name);
+                if(r_game.addPlayer(p)) startGame(p, r_game); else System.out.println("Game is FULL!! Sorry.");
+
+            } catch (Exception e) {
+                System.err.println("r_pop() exception:");
+                e.printStackTrace();
+            }
         }
+
     }
 
 }
