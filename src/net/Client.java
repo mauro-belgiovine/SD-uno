@@ -119,8 +119,9 @@ public class Client {
                 if(r_game.addPlayer(p)) startGame(p, r_game); else System.out.println("Game is FULL!! Sorry.");
 
             } catch (Exception e) {
-                System.err.println("r_pop() exception:");
-                e.printStackTrace();
+                System.out.println("no buono");
+                //System.err.println("r_pop() exception:");
+                //e.printStackTrace();
             }
         }
 
