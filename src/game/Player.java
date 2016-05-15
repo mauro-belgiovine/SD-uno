@@ -2,8 +2,9 @@ package game;
 
 import java.io.Serializable;
 import java.util.*;
+import overlay.*;
 
-public class Player implements Serializable{
+public class Player extends Node implements Serializable{
 
     private String name;
     private int id;

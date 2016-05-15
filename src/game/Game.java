@@ -1,8 +1,10 @@
 package game;
 
+import java.rmi.RemoteException;
 import java.util.*; //fanculo gioco truccato, vince chi l'ha programmato
+import net.RemoteGame;
 
-public class Game{
+public class Game implements RemoteGame{
     
     int p_turn;
 
@@ -39,7 +41,7 @@ public class Game{
         return deck.pop();
     }
 
-    public Card getLastCard(){
+    public Card getLastCard() throws RemoteException{
         return deck.last_c;
     }
 
@@ -47,7 +49,7 @@ public class Game{
         return extra_col;
     }
 
-    public List<Card> getHand(Player p){
+    public List<Card> getHand(Player p) throws RemoteException{
 
         boolean no_cards = true;
 
@@ -76,7 +78,7 @@ public class Game{
 
     }
 
-    public boolean addPlayer(Player p){
+    public boolean addPlayer(Player p) throws RemoteException{
 
         boolean output = false;
 
@@ -85,6 +87,12 @@ public class Game{
             players.add(p);
             output = true;
 
+        }
+        
+        if(output){
+        	for(int i = 0; i < players.size(); i++){
+            	System.out.println("Player IP"+ players.get(i).getIp()+" UUID "+players.get(i).getUuid());
+        	}
         }
 
         return output;
@@ -172,6 +180,25 @@ public class Game{
 
     public int getN_player(){
         return players.size();
+    }
+    
+    
+    //REMOTE METHODS
+    public Card remote_pop() throws RemoteException{
+
+        Card c = pop_card();
+        System.out.println("card popped "+c.serializeCard());
+        return c;
+
+    }
+
+    public void card2Table(Player p, Card c) throws RemoteException{
+        System.out.println(p.getName()+" played "+c.serializeCard());
+        playCard(p,c);
+    }
+
+    public Color getExtraCol() throws RemoteException{
+        return getExtra_col();
     }
 
     /*
