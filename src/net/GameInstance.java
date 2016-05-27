@@ -41,7 +41,7 @@ public class GameInstance implements RemoteGame {
         if(g.checkAllPlaying()){ //if all players want to play, give 'em their first hand
 
             if(!started){
-                g.giveFirstHand();
+                g.setupGame();
                 started = true;
             }
             out = true;

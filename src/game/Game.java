@@ -35,9 +35,6 @@ public class Game implements Serializable{
 
         players = new ArrayList<Player>();
 
-        //put a card on the table
-        deck.card2Table(deck.pop());
-
         finish = false;
         reverse = false;
 
@@ -194,16 +191,18 @@ public class Game implements Serializable{
         playCard(p,c);
     }
 
-    public void giveFirstHand(){
-        //each player picks 7 card from the deck, one by one
+    public void setupGame(){
 
+        //each player picks 7 card from the deck, one by one
         for(int i = 0; i < 7; i++){
 
             for(int y = 0; y < players.size(); y++){
                 players.get(y).card2Hand(deck.pop());
             }
-
         }
+
+        //put a card on the table
+        deck.card2Table(deck.pop());
     }
 
     public List<Card> getPHand(Player p){
