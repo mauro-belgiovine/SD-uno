@@ -8,15 +8,17 @@ import game.*;
 
 public interface RemoteGame extends Remote {
 
-    Card remote_pop() throws RemoteException;
+    int voteStart(Player p) throws RemoteException;
+    int getNPlayer() throws RemoteException;
+    boolean checkAllPlaying() throws RemoteException;
+    Card remotePop() throws RemoteException;
     boolean addPlayer(Player p) throws RemoteException;
     Card getLastCard() throws RemoteException;
     Color getExtraCol() throws RemoteException;
     void card2Table(Player p, Card c) throws RemoteException;
+    boolean isFinish() throws RemoteException;
 
-
-    public List<Card> getHand(Player p) throws RemoteException;
-
+    Game getState() throws RemoteException;
 
 
 }

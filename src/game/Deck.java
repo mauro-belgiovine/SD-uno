@@ -1,8 +1,9 @@
 package game;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Deck {
+public class Deck implements Serializable{
     
     public int n_cards = 108;
     

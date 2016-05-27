@@ -1,17 +1,14 @@
 package overlay;
 
 
-import java.util.*;
+import java.io.Serializable;
 
 import net.RemoteGame;
-import net.Server;
 
 import java.net.*;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
+import java.util.UUID;
 
-public class Node {
+public class Node implements Serializable {
     String uuid;
     Node prevNode, nextNode;
     String ip;

@@ -1,10 +1,12 @@
 package game;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
-import java.util.*; //fanculo gioco truccato, vince chi l'ha programmato
-import net.RemoteGame;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
-public class Game implements RemoteGame{
+public class Game implements Serializable{
     
     int p_turn;
 
@@ -15,12 +17,14 @@ public class Game implements RemoteGame{
     Deck deck;
 
     List<Player> players;
+
+    boolean finish ;
     
-    boolean reverse = false;
+    boolean reverse;
 
     public Game(){
 
-        max_n_player = 3;
+        max_n_player = 10;
         p_turn = 0;
 
         deck = new Deck();
@@ -34,68 +38,17 @@ public class Game implements RemoteGame{
         //put a card on the table
         deck.card2Table(deck.pop());
 
+        finish = false;
+        reverse = false;
 
     }
 
-    public Card pop_card(){
+    public Card popCard(){
         return deck.pop();
     }
 
-    public Card getLastCard() throws RemoteException{
-        return deck.last_c;
-    }
-
-    public Color getExtra_col(){
+    public Color getExtraCol(){
         return extra_col;
-    }
-
-    public List<Card> getHand(Player p) throws RemoteException{
-
-        boolean no_cards = true;
-
-        int p_index = players.indexOf(p); //index of the requesting player
-
-        for(int n = 0; n < players.size(); n++){ //check if each player has 0 cards
-
-            if(players.get(n).getNumCards() != 0){
-                no_cards = false;
-            }
-        }
-
-        if(no_cards) { //if no player has cards, 7 cards (one by one) are drawn from the deck
-
-            for (int i = 0; i < 7; i++) {
-                for (int y = 0; y < players.size(); y++) {
-                    players.get(y).card2Hand(deck.pop());
-                }
-
-            }
-
-        }
-
-
-        return players.get(p_index).getHand(); // player takes his hand
-
-    }
-
-    public boolean addPlayer(Player p) throws RemoteException{
-
-        boolean output = false;
-
-        if((players.size() + 1) <= max_n_player){
-
-            players.add(p);
-            output = true;
-
-        }
-        
-        if(output){
-        	for(int i = 0; i < players.size(); i++){
-            	System.out.println("Player IP"+ players.get(i).getIp()+" UUID "+players.get(i).getUuid());
-        	}
-        }
-
-        return output;
     }
     
     public int nextPlayer(){
@@ -178,27 +131,85 @@ public class Game implements RemoteGame{
         
     }
 
-    public int getN_player(){
+    public boolean addPlayer(Player p) {
+
+        boolean output = false;
+
+        if((players.size() + 1) <= max_n_player){
+
+            players.add(p);
+            output = true;
+
+        }
+
+        if(output){
+            System.out.println("Actual players are:");
+            for(int i = 0; i < players.size(); i++){
+                System.out.println("\tPlayer IP "+ players.get(i).getIp()+" UUID "+players.get(i).getUuid());
+            }
+        }
+
+        return output;
+    }
+
+    public int getNPlayer() {
         return players.size();
     }
-    
-    
-    //REMOTE METHODS
-    public Card remote_pop() throws RemoteException{
 
-        Card c = pop_card();
-        System.out.println("card popped "+c.serializeCard());
-        return c;
+    public int getMaxNPlayer(){
+        return max_n_player;
+    }
+
+    public int voteStart(Player p) {
+        int i = players.indexOf(p);
+        players.get(i).startPlaying();
+
+        return i; //return the player index in the game state
+    }
+
+    public boolean checkAllPlaying() {
+
+        boolean out = false;
+        int num_p = players.size();
+        int started = 0;
+
+        for(int i = 0; i < num_p; i++){
+            if(players.get(i).isPlaying()) started++;
+        }
+
+        if((started == num_p) && (num_p > 1)) out = true;
+
+        return out;
 
     }
 
-    public void card2Table(Player p, Card c) throws RemoteException{
+    public boolean isFinish() { return finish; }
+
+    public Card getLastCard() {
+        return deck.last_c;
+    }
+
+    public void card2Table(Player p, Card c) {
         System.out.println(p.getName()+" played "+c.serializeCard());
         playCard(p,c);
     }
 
-    public Color getExtraCol() throws RemoteException{
-        return getExtra_col();
+    public void giveFirstHand(){
+        //each player picks 7 card from the deck, one by one
+
+        for(int i = 0; i < 7; i++){
+
+            for(int y = 0; y < players.size(); y++){
+                players.get(y).card2Hand(deck.pop());
+            }
+
+        }
+    }
+
+    public List<Card> getPHand(Player p){
+
+        int i = players.indexOf(p);
+        return players.get(i).getHand();
     }
 
     /*
