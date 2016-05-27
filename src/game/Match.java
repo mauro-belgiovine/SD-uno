@@ -57,10 +57,13 @@ public class Match{
     
     public static void startGame(Player p, RemoteGame r_game) throws RemoteException{
 
-        while(!r_game.isFinish()) {
+        while(!g.isFinish()) {
 
             System.out.println("my actual hand is ");
             p.printHand();
+
+            //TODO solo quando è il mio turno devo giocare (devo salvare my_index in Player)
+            //if(g.p_turn != my_index)
 
             System.out.println("********** Its your turn! *************");
             System.out.println("********** Last card " + r_game.getLastCard().serializeCard() + " *************");
