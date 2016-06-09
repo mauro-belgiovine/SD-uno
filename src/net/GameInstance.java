@@ -17,10 +17,14 @@ public class GameInstance implements RemoteGame {
     boolean started = false;
 
     public GameInstance(){
-        g = new Game();
+
     }
 
     //REMOTE METHODS
+
+    public void initGame(){
+        g = new Game();
+    }
 
     public boolean addPlayer(Player p) throws RemoteException {
         return g.addPlayer(p);

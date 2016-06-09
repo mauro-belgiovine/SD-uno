@@ -19,8 +19,9 @@ public class Lobby {
 
         try {
 
-            GameInstance g = new GameInstance();
-            RemoteGame stub = (RemoteGame) UnicastRemoteObject.exportObject(g, 50000);
+            GameInstance lobby_game = new GameInstance();
+            lobby_game.initGame();
+            RemoteGame stub = (RemoteGame) UnicastRemoteObject.exportObject(lobby_game, 50000);
 
             // Bind the remote object's stub in the registry
             reg = LocateRegistry.createRegistry(50000);
