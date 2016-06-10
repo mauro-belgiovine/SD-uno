@@ -210,6 +210,14 @@ public class Game implements Serializable{
         return players.get(i).getHand();
     }
 
+    public int getPturn(){ return p_turn;}
+    public Deck getDeck(){ return deck;}
+    public int playerNum() { return players.size();}
+    public Color getExtraColor(){return extra_col; }
+    public void setExtraColor(Color c) { extra_col=c;}
+    public void nextRound(){p_turn=nextPlayer();}
+    public List<Player> getPlayers() {return players;}
+
     /*
     public static void main(String[] args){
         

@@ -7,12 +7,14 @@ public class Card implements Serializable{    // a card
     private Color color;    //card color
     private int number;  //card number (0..9 or -1 if cards doesn't have a number)
     private Action action;  //card action
+    private String id;
     
-    public Card(Color col, int n, Action act){
+    public Card(Color col, int n, Action act, String ident){
         
         color = col;
         number = n;
         action = act;
+        id = ident;
 
     }
     
@@ -50,4 +52,6 @@ public class Card implements Serializable{    // a card
     }
 
     public boolean sameAction(Card c) { return (action == c.getAction()); }
+
+    public String getId(){ return id; }
 }

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.List;
 
 import static java.lang.Thread.sleep;
 
@@ -15,22 +16,17 @@ import net.*;
 
 public class Match{
 
+    Game g;
+    Player me;
+    GameInstance instance;
+    RemoteGame r_game;
 
-    //TODO   -   ad ogni mossa bisogna salvare nello stato di gioco (g) le carte in possesso di ogni giocatore
-    //TODO   -   e poi distribuire lo stato a tutti gli altri nodi, che aggiorneranno il loro stato di gioco
-    //          tutti i giocatori usano la classe match per giocare, quindi hanno un Game (g) salvato in memoria
-
-    static Game g;
-    static Player me;
-    static GameInstance instance;
-    static RemoteGame r_game;
-
-    static Scanner scan;
-    static int my_index;
+    Scanner scan;
+    int my_index;
 
 
 
-    public static boolean tryBind(Player p, String host){
+    public boolean tryBind(Player p, String host){
 
         Registry registry;
 
@@ -57,12 +53,11 @@ public class Match{
         return out;
     }
     
-    public static void playTurn() throws RemoteException {
-
-            //TODO - creare tutti gli eventi da propagare agli altri client: PICKUP E/O THROW E TURN
+    public void playTurn() throws RemoteException {
 
             System.out.println("********** Its your turn! *************");
             System.out.println("********** Last card " + g.getLastCard().serializeCard() + " *************");
+            System.out.println("********** Extra Color is: "+g.getExtraCol()+" ************");
 
             boolean done = false;
             boolean pass = false;
@@ -100,7 +95,7 @@ public class Match{
 
                     card_i = scan.nextInt();
 
-                    if (me.playCard(card_i, g.getLastCard(), g.getExtraCol()) && (card_i != -1)) {
+                    if (me.checkPlayable(card_i, g.getLastCard(), g.getExtraCol()) && (card_i != -1)) {
 
                         Card thrown = me.throwCard(card_i);
                         g.card2Table(me, thrown); //mette la carta sul tavolo
@@ -143,7 +138,7 @@ public class Match{
 
             if(me.getNumCards() == 0){
                 g.finish = true;
-                //generiamo l'evento TURN
+                //generiamo l'evento FINISH
                 GameEvent e = new GameEvent(Event.FINISH, null);
                 instance.pushEvent(e);
             }
@@ -160,7 +155,7 @@ public class Match{
 
     }
 	
-	public static void main(String[] args) {
+	public void startClient(String[] args) {
 
 		String p_name = "";
         String host = "";
@@ -259,7 +254,7 @@ public class Match{
 		
 	}
 
-    private static void execEvent(GameEvent e) {
+    private void execEvent(GameEvent e) {
 
         int p_index;
         Player p;
@@ -301,7 +296,7 @@ public class Match{
     }
 
 
-    private static void sendUpdates() throws RemoteException {
+    private void sendUpdates() throws RemoteException {
 
         instance.setState(g); //settiamo lo stato attuale nell'interfaccia remota
 
@@ -330,5 +325,16 @@ public class Match{
         instance.clearUpdates(); //rimuoviamo dalla nostra coda gli eventi inviati
 
     }
+
+    public int getPturn(){ return g.getPturn();}
+    public Deck getDeck(){ return g.getDeck();}
+    public int playerNum() { return g.playerNum();}
+    public Color getExtraColor(){return g.getExtraColor(); }
+    public void setExtraColor(Color c) { g.setExtraColor(c);}
+    public void nextRound(){g.nextRound();}
+    public List<Player> getPlayers() {return g.getPlayers();}
+    public void execEffect(Action a){ g.execEffect(a);}
+    public Player getMe(){return me;}
+
 
 }

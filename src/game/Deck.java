@@ -59,7 +59,7 @@ public class Deck implements Serializable{
         last_c = c;
     }
     
-    public void Init_Deck(){
+    /*public void Init_Deck(){
         
         //init all cards
         
@@ -130,7 +130,94 @@ public class Deck implements Serializable{
         for(int i = 0; i < this.n_cards; i++){
             stack.add(cards[i]);
         }
+    }*/
+
+
+    public void Init_Deck(){
+
+        //init all cards
+
+        int count = 0;
+
+        // RED cards
+        cards[count] = new Card(Color.RED, 0, Action.NONE,"000"); // 0 card
+        for(int i = 1; i <= 9; i++){
+            cards[count+i] = new Card(Color.RED, i, Action.NONE, "00"+i);   //two cards per number
+            cards[count+i+9] = new Card(Color.RED, i, Action.NONE, "00"+i);
+        }
+        count += 19;
+
+        // YELLOW cards
+        cards[count] = new Card(Color.YELLOW, 0, Action.NONE, "100"); // 0 card
+        for(int i = 1; i <= 9; i++){
+            cards[count+i] = new Card(Color.YELLOW, i, Action.NONE, "10"+i);   //two cards per number
+            cards[count+i+9] = new Card(Color.YELLOW, i, Action.NONE, "10"+i) ;
+        }
+        count += 19;
+
+        //GREEN cards
+        cards[count] = new Card(Color.GREEN, 0, Action.NONE, "200"); // 0 card
+        for(int i = 1; i <= 9; i++){
+            cards[count+i] = new Card(Color.GREEN, i, Action.NONE, "20"+i);   //two cards per number
+            cards[count+i+9] = new Card(Color.GREEN, i, Action.NONE, "20"+i);
+        }
+        count += 19;
+
+        // BLUE cards
+        cards[count] = new Card(Color.BLUE, 0, Action.NONE, "300"); // 0 card
+        for(int i = 1; i <= 9; i++){
+            cards[count+i] = new Card(Color.BLUE, i, Action.NONE, "30"+i);   //two cards per number
+            cards[count+i+9] = new Card(Color.BLUE, i, Action.NONE, "30"+i);
+        }
+        count += 19;
+
+        // SKIP
+        cards[count++] = new Card(Color.RED, -1, Action.SKIP, "010");
+        cards[count++] = new Card(Color.RED, -1, Action.SKIP, "010");
+        cards[count++] = new Card(Color.YELLOW, -1, Action.SKIP, "110");
+        cards[count++] = new Card(Color.YELLOW, -1, Action.SKIP, "110");
+        cards[count++] = new Card(Color.GREEN, -1, Action.SKIP, "210");
+        cards[count++] = new Card(Color.GREEN, -1, Action.SKIP, "210");
+        cards[count++] = new Card(Color.BLUE, -1, Action.SKIP, "310");
+        cards[count++] = new Card(Color.BLUE, -1, Action.SKIP, "310");
+        //REVERSE
+        cards[count++] = new Card(Color.RED, -1, Action.REVERSE, "011");
+        cards[count++] = new Card(Color.RED, -1, Action.REVERSE, "011");
+        cards[count++] = new Card(Color.YELLOW, -1, Action.REVERSE, "111");
+        cards[count++] = new Card(Color.YELLOW, -1, Action.REVERSE, "111");
+        cards[count++] = new Card(Color.GREEN, -1, Action.REVERSE, "211");
+        cards[count++] = new Card(Color.GREEN, -1, Action.REVERSE, "211");
+        cards[count++] = new Card(Color.BLUE, -1, Action.REVERSE, "311");
+        cards[count++] = new Card(Color.BLUE, -1, Action.REVERSE, "311");
+        //DRAW2
+        cards[count++] = new Card(Color.RED, -1, Action.DRAW2, "012");
+        cards[count++] = new Card(Color.RED, -1, Action.DRAW2, "012");
+        cards[count++] = new Card(Color.YELLOW, -1, Action.DRAW2, "112");
+        cards[count++] = new Card(Color.YELLOW, -1, Action.DRAW2, "112");
+        cards[count++] = new Card(Color.GREEN, -1, Action.DRAW2, "212");
+        cards[count++] = new Card(Color.GREEN, -1, Action.DRAW2, "212");
+        cards[count++] = new Card(Color.BLUE, -1, Action.DRAW2, "312");
+        cards[count++] = new Card(Color.BLUE, -1, Action.DRAW2, "312");
+
+        //WILD
+        for(int i = 0; i < 4; i++) cards[count+i] = new Card(Color.NONE, -1, Action.WILD, "400");
+        count += 4;
+
+        //DRAW4
+        for(int i = 0; i < 4; i++) cards[count+i] = new Card(Color.NONE, -1, Action.DRAW4, "401");
+
+        //init the deck stack
+
+        for(int i = 0; i < this.n_cards; i++){
+            stack.add(cards[i]);
+        }
     }
+
+    public String getPrevTableCard(){
+        return (table.get(table.size()-2)).getId();
+    }
+
+    public String getTableCard(){ return (table.get(table.size()-1)).getId(); }
     
 
 }
