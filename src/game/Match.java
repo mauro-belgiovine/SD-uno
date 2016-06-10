@@ -111,7 +111,7 @@ public class Match{
                         //generiamo l'evento THROW
                         Map<String, Object> m = new HashMap<String,Object>();
                         m.put("player", my_index);
-                        m.put("card", thrown);
+                        m.put("card_i", card_i);
                         GameEvent e = new GameEvent(Event.THROW, m);
                         instance.pushEvent(e);
 
@@ -224,18 +224,17 @@ public class Match{
                         sendUpdates();
                     }
 
-                    sleep(1000);
                     System.out.println("WAITING FOR THE TURNING POINT...");
+                    sleep(1000);
 
                     //prelevo gli eventi
                     GameEvent e;
-
                     do{
-
-                        //TODO processa ogni evento
                         e = instance.popEvent();
-                        if(e != null) System.out.println("ho ricevuto un evento");
-
+                        if(e != null){
+                            System.out.println("ho ricevuto un evento: "+e.toString());
+                            execEvent(e);
+                        }
                     }while(e != null);
 
                 } while(!g.isFinish());
@@ -250,6 +249,43 @@ public class Match{
         scan.close();
 		
 	}
+
+    private static void execEvent(GameEvent e) {
+
+        int p_index;
+        Player p;
+
+        switch(e.event){
+
+            case PICKUP:
+                //il giocatore indicato deve pescare una carta dal mazzo
+                p_index = (Integer) e.params.get("player");
+                p = g.players.get(p_index);
+                Card pu = g.popCard(); //pesca una carta
+                p.card2Hand(pu);
+                break;
+
+            case THROW:
+                //il giocatore indicato deve mettere sul tavolo la carta
+                p_index = (Integer) e.params.get("player");
+                p = g.players.get(p_index);
+                Card thrown = p.throwCard( (Integer) e.params.get("card_i") );
+                g.card2Table(p, thrown); //mette la carta sul tavolo
+                break;
+
+            case EXTRA_COL:
+                //si cambia l'extra_col (DRAW4 o WILD)
+                g.extra_col = (Color) e.params.get("extra");
+                break;
+
+            case TURN:
+                //setta il prossimo giocatore
+                g.p_turn = (Integer) e.params.get("next");
+                break;
+        }
+
+    }
+
 
     private static void sendUpdates() throws RemoteException {
 
