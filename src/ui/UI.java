@@ -12,6 +12,8 @@ public class UI {
     public static void main(String[] args){
         my_match = new Match();
         my_match.startClient(args);
+
+        return;
     }
 
 }
