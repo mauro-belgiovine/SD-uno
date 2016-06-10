@@ -5,11 +5,11 @@ UNO Game - Java 7
 Made for the Distributed System exam.
 
 Instructions:
-After compiling the project, launche the lobby like this:
+After compiling the project, launch the lobby like this:
 
 $ java game.Lobby 
 
 and start the clients like this
 
-$ java game.Match <username> <lobby ip>
+$ java ui.UI <username> <lobby ip>
 
