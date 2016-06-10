@@ -7,6 +7,8 @@ public enum Event {
     PICKUP, // è stata pescata una carta dal mazzo
     THROW,  // è stata messa una carta sul tavolo
     TURN ,   // è cambiato il tavolo
-    EXTRA_COL
+    EXTRA_COL,  //è stato scelto un colore (WILD o DRAW4)
+    FINISH
+
     //TODO ...?
 }

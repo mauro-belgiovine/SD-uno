@@ -141,7 +141,12 @@ public class Match{
             me.printPlayer();
             System.out.println("*******************");
 
-            //if(p.getNumCards() == 0) finish = true;
+            if(me.getNumCards() == 0){
+                g.finish = true;
+                //generiamo l'evento TURN
+                GameEvent e = new GameEvent(Event.FINISH, null);
+                instance.pushEvent(e);
+            }
 
             //p_turn = nextPlayer(); // choose next player
 
@@ -286,6 +291,11 @@ public class Match{
                 //setta il prossimo giocatore
                 g.p_turn = (Integer) e.params.get("next");
                 break;
+
+            case FINISH:
+                //la partita è finita è ha vinto il giocatore corrente (g.p_turn)
+                g.finish = true;
+                System.out.println("PARTITA FINITA! Vincitore: "+g.players.get(g.p_turn).getName());
         }
 
     }
