@@ -115,12 +115,16 @@ public class Match{
                         GameEvent e = new GameEvent(Event.THROW, m);
                         instance.pushEvent(e);
 
+                        if((thrown.getAction() == Action.DRAW4) ||  (thrown.getAction() == Action.WILD)){
+                            g.extra_col = g.chooseColor();
+                        }
+
                         //se è cambiato extra_color, generiamo anche questo evento
                         if(g.getExtraCol() != Color.NONE){
 
                             Map<String, Object> m_extra = new HashMap<String,Object>();
                             m_extra.put("extra", g.getExtraCol());
-                            GameEvent e_extra = new GameEvent(Event.THROW, m_extra);
+                            GameEvent e_extra = new GameEvent(Event.EXTRA_COL, m_extra);
                             instance.pushEvent(e_extra);
 
                         }

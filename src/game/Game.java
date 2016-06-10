@@ -106,7 +106,7 @@ public class Game implements Serializable{
             case DRAW4:    //pesca 4 carte + cambia colore
                 for(int i = 0; i < 4; i++) next.card2Hand(deck.pop());
                 p_turn = nextPlayer();
-                extra_col = chooseColor();
+                //extra_col = chooseColor();
                 break;
                 
             case REVERSE:     //inverti giro di mano
@@ -118,7 +118,7 @@ public class Game implements Serializable{
                 break;
                 
             case WILD: //cambia colore
-                extra_col = chooseColor();
+                //extra_col = chooseColor();
                 break;
                 
             default:
