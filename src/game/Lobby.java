@@ -20,15 +20,15 @@ public class Lobby {
         try {
 
             GameInstance lobby_game = new GameInstance();
-            lobby_game.initGame();
+            lobby_game.initGame(); //init a new game
             RemoteGame stub = (RemoteGame) UnicastRemoteObject.exportObject(lobby_game, 50000);
 
             // Bind the remote object's stub in the registry
             reg = LocateRegistry.createRegistry(50000);
             reg.bind(name, stub);
 
-
             System.out.println("net.Lobby bound");
+
 
         } catch (Exception e) {
             System.err.println("net.Lobby exception:");

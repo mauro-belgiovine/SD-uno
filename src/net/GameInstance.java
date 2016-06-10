@@ -6,6 +6,8 @@ import game.Game;
 import game.Player;
 
 import java.rmi.RemoteException;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Created by mauro on 26/05/16.
@@ -13,11 +15,13 @@ import java.rmi.RemoteException;
 public class GameInstance implements RemoteGame {
 
     Game g;
+    Queue<GameEvent> update_queue;
 
-    boolean started = false;
+    boolean started;
 
     public GameInstance(){
-
+        update_queue = new LinkedList<GameEvent>();
+        started = false;
     }
 
     //REMOTE METHODS
@@ -61,10 +65,8 @@ public class GameInstance implements RemoteGame {
         return g.getLastCard();
     }
 
-    public Card remotePop() throws RemoteException{
-
+    public Card remotePop() throws RemoteException{ //TODO - non serve?
         return g.popCard();
-
     }
 
     public void card2Table(Player p, Card c) throws RemoteException{
@@ -77,6 +79,30 @@ public class GameInstance implements RemoteGame {
 
     public Game getState() throws RemoteException{
         return g;
+    }
+
+    public void setState(Game state) throws RemoteException{
+        g = state;
+    }
+
+    public void pushEvent(GameEvent e) throws RemoteException{
+        update_queue.add(e); //save locally the event received
+    }
+
+    public GameEvent popEvent(){
+        return update_queue.poll();
+    }
+
+    public Queue<GameEvent> getUpdates() {
+        return update_queue;
+    }
+
+    public void clearUpdates(){
+        update_queue.clear();
+    }
+
+    public void sendUpdates(Queue<GameEvent> q) throws RemoteException{
+        update_queue = q;
     }
 
 }

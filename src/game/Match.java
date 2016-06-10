@@ -4,20 +4,21 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
 
 import net.*;
 
-
-
 public class Match{
 
 
-    //TODO      ad ogni mossa bisogna salvare nello stato di gioco (r_game) le carte in possesso di ogni giocatore
-    //TODO      e poi distribuire lo stato a tutti gli altri nodi, che aggiorneranno il loro stato di gioco
-    //          tutti i giocatori usano la classe match per giocare, quindi hanno un r_game salvato in memoria
+    //TODO   -   ad ogni mossa bisogna salvare nello stato di gioco (g) le carte in possesso di ogni giocatore
+    //TODO   -   e poi distribuire lo stato a tutti gli altri nodi, che aggiorneranno il loro stato di gioco
+    //          tutti i giocatori usano la classe match per giocare, quindi hanno un Game (g) salvato in memoria
 
     static Game g;
     static Player me;
@@ -25,6 +26,7 @@ public class Match{
     static RemoteGame r_game;
 
     static Scanner scan;
+    static int my_index;
 
 
 
@@ -55,18 +57,12 @@ public class Match{
         return out;
     }
     
-    public static void startGame(Player p, RemoteGame r_game) throws RemoteException{
+    public static void playTurn() throws RemoteException {
 
-        while(!g.isFinish()) {
-
-            System.out.println("my actual hand is ");
-            p.printHand();
-
-            //TODO solo quando è il mio turno devo giocare (devo salvare my_index in Player)
-            //if(g.p_turn != my_index)
+            //TODO - creare tutti gli eventi da propagare agli altri client: PICKUP E/O THROW E TURN
 
             System.out.println("********** Its your turn! *************");
-            System.out.println("********** Last card " + r_game.getLastCard().serializeCard() + " *************");
+            System.out.println("********** Last card " + g.getLastCard().serializeCard() + " *************");
 
             boolean done = false;
             boolean pass = false;
@@ -74,9 +70,9 @@ public class Match{
 
             while (!done) {
 
-                //prent player choose the card to play
+                //current player choose the card to play
 
-                p.printHand();
+                me.printHand();
 
                 if (!pass) System.out.println("<p> to PICKUP a card from the Deck");
                 else System.out.println("<e> to END your turn");
@@ -85,10 +81,17 @@ public class Match{
 
 
                     if (!pass && scan.next().equals("p")) {
-                        Card pu = r_game.remotePop(); //pickup a card
+                        Card pu = g.popCard(); //pickup a card
                         System.out.println("pu ");
-                        p.card2Hand(pu);
+                        me.card2Hand(pu);
                         pass = true;
+
+                        //generiamo l'evento PICKUP
+                        Map<String, Object> m = new HashMap<String, Object>();
+                        m.put("player", my_index);
+                        GameEvent e = new GameEvent(Event.PICKUP,m);
+                        instance.pushEvent(e); //aggiungi questo evento alla coda
+
                     } else if (pass && scan.next().equals("e")) {
                         done = true;
                     }
@@ -97,13 +100,31 @@ public class Match{
 
                     card_i = scan.nextInt();
 
-                    if (p.playCard(card_i, r_game.getLastCard(), r_game.getExtraCol()) && (card_i != -1)) {
+                    if (me.playCard(card_i, g.getLastCard(), g.getExtraCol()) && (card_i != -1)) {
 
-                        Card thrown = p.throwCard(card_i);
-                        r_game.card2Table(p, thrown); //he put it on the table
+                        Card thrown = me.throwCard(card_i);
+                        g.card2Table(me, thrown); //mette la carta sul tavolo
                         System.out.print("y ");
                         thrown.printCard();
                         done = true;
+
+                        //generiamo l'evento THROW
+                        Map<String, Object> m = new HashMap<String,Object>();
+                        m.put("player", my_index);
+                        m.put("card", thrown);
+                        GameEvent e = new GameEvent(Event.THROW, m);
+                        instance.pushEvent(e);
+
+                        //se è cambiato extra_color, generiamo anche questo evento
+                        if(g.getExtraCol() != Color.NONE){
+
+                            Map<String, Object> m_extra = new HashMap<String,Object>();
+                            m_extra.put("extra", g.getExtraCol());
+                            GameEvent e_extra = new GameEvent(Event.THROW, m_extra);
+                            instance.pushEvent(e_extra);
+
+                        }
+
 
                     } else {
                         System.out.println("n ");
@@ -113,13 +134,20 @@ public class Match{
             }
 
             System.out.println();
-            p.printPlayer();
+            me.printPlayer();
             System.out.println("*******************");
 
             //if(p.getNumCards() == 0) finish = true;
 
             //p_turn = nextPlayer(); // choose next player
-        }
+
+            g.p_turn = g.nextPlayer();
+
+            //generiamo l'evento TURN
+            Map<String, Object> m = new HashMap<String,Object>();
+            m.put("next", g.p_turn);
+            GameEvent e = new GameEvent(Event.TURN, m);
+            instance.pushEvent(e);
 
     }
 	
@@ -151,9 +179,7 @@ public class Match{
 
                 instance = new GameInstance(); //create local instance of the game state
 
-                int my_index = -1;
-
-
+                my_index = -1;
 
                 while(!me.isPlaying()){
                     System.out.println("<s> to vote for match start");
@@ -188,7 +214,31 @@ public class Match{
 
                 me.setHand(g.getPHand(me)); //prendo le mie carte dallo stato del gioco
 
-                startGame(me, r_game);
+                System.out.println("my actual hand is ");
+                me.printHand();
+
+                do{
+
+                    if(g.p_turn == my_index){   //se tocca a me,
+                        playTurn();             //gioco il mio turno
+                        sendUpdates();
+                    }
+
+                    sleep(1000);
+                    System.out.println("WAITING FOR THE TURNING POINT...");
+
+                    //prelevo gli eventi
+                    GameEvent e;
+
+                    do{
+
+                        //TODO processa ogni evento
+                        e = instance.popEvent();
+                        if(e != null) System.out.println("ho ricevuto un evento");
+
+                    }while(e != null);
+
+                } while(!g.isFinish());
 
             } catch (Exception e) {
                 System.err.println("in-game exception:");
@@ -200,5 +250,35 @@ public class Match{
         scan.close();
 		
 	}
+
+    private static void sendUpdates() throws RemoteException {
+
+        instance.setState(g); //settiamo lo stato attuale nell'interfaccia remota
+
+        for(int i = 0; i < g.getNPlayer(); i++){
+
+            if(i != my_index){ //mandiamo a tutti, tranne a me stesso
+
+                String name = "player." + g.players.get(i).getUuid();
+                try {
+
+                    Registry registry = LocateRegistry.getRegistry(g.players.get(i).getIp(), 50000+1+i);
+                    r_game = (RemoteGame) registry.lookup(name);
+
+                    Queue<GameEvent> queue = instance.getUpdates();
+                    r_game.sendUpdates(queue); //invia la lista degli eventi ad ogni client
+
+                } catch (Exception e) {
+                    System.err.println("tryBind() exception:");
+                    e.printStackTrace();
+                }
+
+
+            }
+        }
+
+        instance.clearUpdates(); //rimuoviamo dalla nostra coda gli eventi inviati
+
+    }
 
 }

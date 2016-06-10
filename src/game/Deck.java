@@ -8,7 +8,9 @@ public class Deck implements Serializable{
     public int n_cards = 108;
     
     public Card[] cards;
-    
+
+    //TODO - cambiare stack e table in queue???
+
     public List<Card> stack; // stack is a list of int, which correspond to the indexes of cards[]
     public int n_current = n_cards;
     

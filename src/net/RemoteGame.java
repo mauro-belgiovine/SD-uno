@@ -2,7 +2,7 @@ package net;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
+import java.util.Queue;
 
 import game.*;
 
@@ -19,6 +19,10 @@ public interface RemoteGame extends Remote {
     boolean isFinish() throws RemoteException;
 
     Game getState() throws RemoteException;
+    void setState(Game state) throws RemoteException;
+
+    void pushEvent(GameEvent e) throws RemoteException;
+    void sendUpdates(Queue<GameEvent> q) throws RemoteException;
 
 
 }
