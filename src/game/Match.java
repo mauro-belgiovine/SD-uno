@@ -24,8 +24,6 @@ public class Match{
     Scanner scan;
     int my_index;
 
-
-
     public boolean tryBind(Player p, String host){
 
         Registry registry;

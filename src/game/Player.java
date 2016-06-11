@@ -83,6 +83,8 @@ public class Player extends Node implements Serializable{
     
     //TODO: usare Card invece che l'indice?
     //TODO: rimuovere errore se le carte hanno tutte e due valore numerico uguale a  -1
+    //TODO: fix prima carta DRAW4/WILD
+
     public boolean checkPlayable(int i, Card last, Color extra){
         // "i" is the index of my chosen card; "last" is the current card on top of the table;
         // "extra" is set in case DRAW4 or WILD is on the table
@@ -99,7 +101,7 @@ public class Player extends Node implements Serializable{
 
             } else if (last.getColor() != Color.NONE) { //if last card has a color
                                         //TODO: FIXX!!
-                if (c.sameColor(last) || c.sameNumber(last) || (c.sameAction(last) && (c.getAction() != Action.NONE))) {
+                if (c.sameColor(last) || (c.sameNumber(last) && c.getNumber() != -1) || (c.sameAction(last) && (c.getAction() != Action.NONE))) {
                     out = true;
                 }
 
