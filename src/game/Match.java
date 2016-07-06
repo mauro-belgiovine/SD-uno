@@ -58,7 +58,7 @@ public class Match{
             System.out.println("********** Extra Color is: "+g.getExtraCol()+" ************");
 
             boolean done = false;
-            boolean pass = false;
+            boolean pickup = false;
             int card_i = -1;
 
             while (!done) {
@@ -67,17 +67,17 @@ public class Match{
 
                 me.printHand();
 
-                if (!pass) System.out.println("<p> to PICKUP a card from the Deck");
+                if (!pickup) System.out.println("<p> to PICKUP a card from the Deck");
                 else System.out.println("<e> to END your turn");
 
                 if (!scan.hasNextInt()) {
 
 
-                    if (!pass && scan.next().equals("p")) {
+                    if (!pickup && scan.next().equals("p")) {
                         Card pu = g.popCard(); //pickup a card
                         System.out.println("pu ");
                         me.card2Hand(pu);
-                        pass = true;
+                        pickup = true;
 
                         //generiamo l'evento PICKUP
                         Map<String, Object> m = new HashMap<String, Object>();
@@ -85,7 +85,7 @@ public class Match{
                         GameEvent e = new GameEvent(Event.PICKUP,m);
                         instance.pushEvent(e); //aggiungi questo evento alla coda
 
-                    } else if (pass && scan.next().equals("e")) {
+                    } else if (pickup && scan.next().equals("e")) {
                         done = true;
                     }
 
